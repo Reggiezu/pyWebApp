@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="section">
+    <h2>Log This Week</h2>
+
+    <form action="{{ url_for('log_week') }}" method="POST" class="log-form">
+
+        <div class="form-group">
+            <label for="week_number">Week Number (1–13)</label>
+            <input type="number" id="week_number" name="week_number" min="1" max="13" required>
+        </div>
+
+        <fieldset>
+            <legend>Scores (0–100)</legend>
+
+            <div class="form-group">
+                <label for="goal1_score">Goal 1 Score</label>
+                <input type="number" id="goal1_score" name="goal1_score" min="0" max="100">
+            </div>
+
+            <div class="form-group">
+                <label for="goal2_score">Goal 2 Score</label>
+                <input type="number" id="goal2_score" name="goal2_score" min="0" max="100">
+            </div>
+
+            <div class="form-group">
+                <label for="goal3_score">Goal 3 Score</label>
+                <input type="number" id="goal3_score" name="goal3_score" min="0" max="100">
+            </div>
+        </fieldset>
+
+        <div class="form-group">
+            <label for="reflection">Weekly Reflection</label>
+            <textarea id="reflection" name="reflection" rows="4" placeholder="What worked? What didn't?"></textarea>
+        </div>
+
+        <button type="submit">Save Week</button>
+
+    </form>
+</section>
+
+{% endblock %}
