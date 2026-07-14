@@ -1,3 +1,5 @@
 .venv
 .env
-instance/project.db
+instance
+__pycache__
+*.pyc

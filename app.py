@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from models import User, ScoreCard, Category, Goal, ScorecardInit, WeeklyCategoryScore, db, Base
-
+from flask_migrate import Migrate
 
 
 app = Flask(__name__)
@@ -8,9 +8,8 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 # initialize the app with the extension
 db.init_app(app)
+migrate = Migrate(app, db)
 
-with app.app_context():
-    db.create_all()
 
 # --- Stub data (replace with SQLAlchemy in Sprint 1 Week 2) ---
 weeks = [
