@@ -1,53 +1,45 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
 <section class="section">
-    <h2>Current Goals</h2>
-    <div class="goals-grid">
-        <div class="goal-card">
-            <span class="goal-label">Goal 1</span>
-            <p>Placeholder goal description</p>
-        </div>
-        <div class="goal-card">
-            <span class="goal-label">Goal 2</span>
-            <p>Placeholder goal description</p>
-        </div>
-        <div class="goal-card">
-            <span class="goal-label">Goal 3</span>
-            <p>Placeholder goal description</p>
-        </div>
+  <h2>Current Goals</h2>
+  <div class="goals-grid">
+    <div class="goal-card">
+      <span class="goal-label">Goal 1</span>
+      <p>Placeholder goal description</p>
     </div>
+    <div class="goal-card">
+      <span class="goal-label">Goal 2</span>
+      <p>Placeholder goal description</p>
+    </div>
+    <div class="goal-card">
+      <span class="goal-label">Goal 3</span>
+      <p>Placeholder goal description</p>
+    </div>
+  </div>
 </section>
 
 <section class="section">
-    <h2>13-Week Scorecard</h2>
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Week</th>
-                    <th>Goal 1 Score</th>
-                    <th>Goal 2 Score</th>
-                    <th>Goal 3 Score</th>
-                    <th>Overall %</th>
-                    <th>Reflection</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for week in weeks %}
-                <tr>
-                    <td>{{ week.week_number }}</td>
-                    <td>{{ week.goal1_score if week.goal1_score else '—' }}</td>
-                    <td>{{ week.goal2_score if week.goal2_score else '—' }}</td>
-                    <td>{{ week.goal3_score if week.goal3_score else '—' }}</td>
-                    <td>{{ week.overall if week.overall else '—' }}</td>
-                    <td class="reflection-cell">{{ week.reflection if week.reflection else '—' }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <h2>13-Week Scorecard</h2>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Week</th>
+          <th>Reflection</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for week in weeks %}
+        <tr>
+          <td>{{ week.week_number }}</td>
+          <td class="reflection-cell">
+            {{ week.reflection_week if week.reflection_week else '—' }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </section>
 
 {% endblock %}
