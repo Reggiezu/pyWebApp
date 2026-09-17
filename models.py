@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime
-from sqlalchemy import String, DateTime, func, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import String, DateTime, func, ForeignKey, Text, JSON
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from flask_sqlalchemy import SQLAlchemy
 
 class Base(DeclarativeBase):
@@ -14,15 +14,30 @@ class User(Base):
     __tablename__ = "users"
     # Primary Key (Infers Integer)
     id: Mapped[int] = mapped_column(primary_key=True)
-    
+    google_config: Mapped["UsersConfig"] = relationship(back_populates="user")
     # Non-nullable String with explicit length (Infers VARCHAR(50), NOT NULL)
     username: Mapped[str] = mapped_column(String(50), unique=True)
-    
     # Column with a server-side default value
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
         server_default=func.now()
     )
+
+class UsersConfig(Base):
+    __tablename__ = "usersconfig"
+    # Primary Key (Infers Integer)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user: Mapped["User"] = relationship(back_populates="google_config")
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), unique=True)
+    access_token: Mapped[str] = mapped_column(Text)
+    refresh_token: Mapped[str] = mapped_column(String(250))
+    token_uri: Mapped[str] = mapped_column(String(250))
+    client_id: Mapped[str] = mapped_column(String(250))
+    client_secret: Mapped[str] = mapped_column(String(250))
+    scopes: Mapped[list[str]] = mapped_column(JSON, default=list)
+    expiry: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True))
+
 
 class ScoreCard(Base):
     __tablename__ = "scorecards"
