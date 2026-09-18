@@ -8,12 +8,17 @@
 </head>
 <body>
     <nav>
-        <span class="nav-title">12 Week Year Tracker</span>
-        <div class="nav-links">
-            <a href="{{ url_for('index') }}">Dashboard</a>
-            <a href="{{ url_for('log_week') }}">Log Week</a>
-        </div>
-    </nav>
+    <span class="nav-title">12 Week Year Tracker</span>
+    <div class="nav-links">
+        <a href="{{ url_for('index') }}">Dashboard</a>
+        <a href="{{ url_for('log_week') }}">Log Week</a>
+        {% if google_connected %}
+            <span class="auth-btn connected">Connected ✓</span>
+        {% else %}
+            <a href="{{ url_for('auth') }}" class="auth-btn">Connect Google Calendar</a>
+        {% endif %}
+    </div>
+    </nav>  
 
     <main>
         {% block content %}{% endblock %}
