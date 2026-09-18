@@ -19,6 +19,23 @@
 </section>
 
 <section class="section">
+  <h2>Upcoming Calendar Events</h2>
+  {% if google_connected %}
+    {% if events %}
+      <select class="events-dropdown">
+        {% for event in events %}
+          <option>{{ event.summary }} — {{ event.created }} ({{ event.status }})</option>
+        {% endfor %}
+      </select>
+    {% else %}
+      <p class="empty-state">No events found on this calendar.</p>
+    {% endif %}
+  {% else %}
+    <p class="empty-state">Connect your Google Calendar to see events here.</p>
+  {% endif %}
+</section>
+
+<section class="section">
   <h2>13-Week Scorecard</h2>
   <div class="table-wrapper">
     <table>

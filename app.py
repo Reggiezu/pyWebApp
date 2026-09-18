@@ -2,7 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, session, a
 from models import User, ScoreCard, Category, Goal, ScorecardInit, WeeklyCategoryScore, db, Base, UsersConfig
 from flask_migrate import Migrate
 from sqlalchemy import select
-import google.oauth2.credentials
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request, AuthorizedSession
+import google.oauth2.credentials 
 import google_auth_oauthlib.flow
 import secrets
 import os 
@@ -17,13 +19,85 @@ db.init_app(app)
 migrate = Migrate(app, db)
 app.secret_key=secrets.token_hex()
 
+# --- Functions ---
+def get_valid_credentials(user_id):
+    stored = db.session.execute(select(UsersConfig).where(UsersConfig.user_id==user_id)).scalars().first()
+    creds = Credentials(token=stored.access_token, 
+                refresh_token=stored.refresh_token, 
+                token_uri=stored.token_uri, 
+                client_id=stored.client_id, 
+                client_secret=stored.client_secret, 
+                scopes=stored.scopes)
+    if creds.expired:
+        creds.refresh(Request())
+        stored.access_token = creds.token
+        stored.expiry = creds.expiry
+        db.session.commit()
+    return creds
+
+def get_calendar_list(creds):
+    request_link = "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+    #parse through the JSON and get a list of calendar IDs
+    authed_session = AuthorizedSession(creds)
+    calendar_list =[]
+    response = authed_session.get(request_link)
+    response = response.json();
+    for  cal in response["items"]:
+        calendar_list.append(cal["id"])
+    return calendar_list
+
+def get_calendar_events(creds,calendar_id ):
+    request_link = f"https://www.googleapis.com/calendar/v3/calendars/{calendar_id}/events"
+    authed_session = AuthorizedSession(creds)
+    response = authed_session.get(request_link)
+    response = response.json();
+    events = []
+    for item in response["items"]:
+        events.append(item)
+    return events
+
+def get_summarized_events(events):
+    summarized_events=[]
+    for item in events:
+        summarized_events.append({
+        "id": item.get("id"),
+        "summary": item.get("summary", "(No title)"),
+        "created": item.get("created"),
+        "status": item.get("status")
+    })
+    return summarized_events
+
+
+
 # --- Routes ---
 
 @app.route('/')
 def index():
     user_scorecard = db.session.execute(select(ScoreCard).where(ScoreCard.user_id==1)).scalars().all()
-    return render_template('index.html', weeks=user_scorecard)
 
+    connected = db.session.execute(
+        select(UsersConfig).where(UsersConfig.user_id == 1)
+    ).scalars().first() is not None
+
+    events = []
+    if connected:
+        try:
+            creds = get_valid_credentials(1)
+            #does not need to be hidden...
+            raw_events = get_calendar_events(creds, '41e45deabdfeaba96ced9c4161c4687d0ba7d56626304018b53bcc18a2f91509@group.calendar.google.com')
+            events = get_summarized_events(raw_events)
+        except Exception as e:
+            print(f"Calendar fetch failed: {e}")
+            events = []
+
+    return render_template('index.html', weeks=user_scorecard, events=events)
+
+@app.context_processor
+def inject_google_status():
+    connected = db.session.execute(
+        select(UsersConfig).where(UsersConfig.user_id == 1)
+    ).scalars().first() is not None
+    return dict(google_connected=connected)
 
 @app.route('/log_week', methods=['GET', 'POST'])
 def log_week():
@@ -116,6 +190,7 @@ def callback():
             )
         db.session.add(config)
         db.session.commit() 
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
