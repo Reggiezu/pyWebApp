@@ -53,4 +53,13 @@ flask db upgrade
 flask run
 ```
 
+```bash
+MYSQL_ROOT_PASSWORD=<INSERT_PASS>
+MYSQL_USER=<INSERT_USER>
+MYSQL_PASSWORD=<INSERT_PASS>
+SECRET_KEY=<INSERT_KEY>#YOU CAN GENERATE ONE USING "python -c "import secrets; print(secrets.token_hex())""
+MYSQL_HOST=<INSERT_HOST_OR_HOST_URL>#EX.127.0.0.1
+MYSQL_PORT=<INSERT_PORT>#EX. 3307
+```
+
 You'll need your own Google Cloud project with the Calendar API enabled and OAuth2 credentials downloaded as `client_secret.json` in the project root. `OAUTHLIB_INSECURE_TRANSPORT=1` is set for local HTTP development only — never in production.
