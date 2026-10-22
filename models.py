@@ -45,7 +45,7 @@ class ScoreCard(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     week_number : Mapped[int] = mapped_column(default=0)
-    reflection_week: Mapped[str] = mapped_column(default="")
+    reflection_week: Mapped[str] = mapped_column(String(255))
 
     # Column with a server-side default value
     created_at: Mapped[datetime] = mapped_column(
