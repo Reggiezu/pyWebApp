@@ -19,9 +19,9 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install -r app/requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Check app imports cleanly
-        run: python -c "import sys; sys.path.insert(0, 'app'); import app"
+        run: python -c "import app"
         env:
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
