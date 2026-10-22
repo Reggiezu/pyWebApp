@@ -6,7 +6,6 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request, AuthorizedSession
 import google.oauth2.credentials 
 import google_auth_oauthlib.flow
-import secrets
 import os 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
@@ -15,12 +14,12 @@ app = Flask(__name__)
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = (
       f"mysql+pymysql://twelvewy_app:{os.environ['MYSQL_PASSWORD']}"
-      f"@12wy-mysql:3306/twelvewy"
+      f"@{os.environ.get('MYSQL_HOST', '12wy-mysql')}:{os.environ.get('MYSQL_PORT', '3306')}/twelvewy"
   )
 # initialize the app with the extension
 db.init_app(app)
 migrate = Migrate(app, db)
-app.secret_key=secrets.token_hex()
+app.secret_key = os.environ['SECRET_KEY']
 @app.route("/health")
 def health():
     return "ok", 200
