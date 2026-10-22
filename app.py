@@ -21,7 +21,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 db.init_app(app)
 migrate = Migrate(app, db)
 app.secret_key=secrets.token_hex()
-
+@app.route("/health")
+def health():
+    return "ok", 200
 # --- Functions ---
 def get_valid_credentials(user_id):
     stored = db.session.execute(select(UsersConfig).where(UsersConfig.user_id==user_id)).scalars().first()
