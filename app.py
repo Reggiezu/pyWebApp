@@ -19,7 +19,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 # initialize the app with the extension
 db.init_app(app)
 migrate = Migrate(app, db)
-os.environ['SECRET_KEY']
+app.secret_key = os.environ['SECRET_KEY']
 @app.route("/health")
 def health():
     return "ok", 200
