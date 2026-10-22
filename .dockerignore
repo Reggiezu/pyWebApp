@@ -1,0 +1,6 @@
+.git
+client_secret.json
+.env
+instance
+__pycache__
+*.bak
