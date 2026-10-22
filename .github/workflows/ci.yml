@@ -9,6 +9,25 @@ on:
 jobs:
   build-and-check:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: ci-root-pw
+          MYSQL_DATABASE: twelvewy
+          MYSQL_USER: twelvewy_app
+          MYSQL_PASSWORD: ci-app-pw
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root -pci-root-pw"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      MYSQL_PASSWORD: ci-app-pw
+      MYSQL_HOST: 127.0.0.1
+      SECRET_KEY: ci-only-not-a-real-key
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,5 +42,6 @@ jobs:
 
       - name: Check app imports cleanly
         run: python -c "import app"
-        env:
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+
+      - name: Run migrations against MySQL
+        run: flask db upgrade
